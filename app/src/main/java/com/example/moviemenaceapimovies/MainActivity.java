@@ -108,6 +108,11 @@ public class MainActivity extends AppCompatActivity implements MovieIDManager.Mo
             ViewingSQL viewingSQL = new ViewingSQL();
             for(int i = 1; i < 8; i++){
                 viewingSQL.addViewingsToDB(vm.createViewings(LocalDate.now().plusDays(i), movies));
+                try {
+                    Thread.sleep(6000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
             return null;
         }
