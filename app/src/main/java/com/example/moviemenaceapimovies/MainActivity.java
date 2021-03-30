@@ -17,9 +17,11 @@ import com.example.moviemenaceapimovies.domain.Movie;
 import com.example.moviemenaceapimovies.domain.MovieID;
 import com.example.moviemenaceapimovies.logic.MovieIDManager;
 import com.example.moviemenaceapimovies.logic.MovieManager;
+import com.example.moviemenaceapimovies.logic.ViewingManager;
 import com.example.moviemenaceapimovies.ui.MovieAdapter;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -39,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements MovieIDManager.Mo
     private MovieAdapter mMovieAdapter;
     private TextView mAmountOfMovies;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +60,9 @@ public class MainActivity extends AppCompatActivity implements MovieIDManager.Mo
         }
         mMovieAdapter = new MovieAdapter(movies);
         mRecyclerView.setAdapter(mMovieAdapter);
+
+        ViewingManager vm = new ViewingManager();
+        vm.createViewings(LocalDate.now());
 
     }
 
