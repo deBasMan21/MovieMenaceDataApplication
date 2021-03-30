@@ -16,11 +16,16 @@ public class ViewingManager {
     public ArrayList<Viewing> createViewings(LocalDate date){
         ArrayList<Viewing> viewings = new ArrayList<>();
         for(int i = 1; i < 5; i++){
-            for(int j = 12; j < 20; j += 4){
+            for(int j = 12; j < 24; j += 4){
                 LocalTime lt = LocalTime.parse(j + ":00");
                 LocalDateTime dt = LocalDateTime.of(date, lt);
+                viewings.add(new Viewing(0, dt, 12.50, false, i, getRandomMovieID()));
             }
         }
         return viewings;
+    }
+
+    public int getRandomMovieID(){
+        return 0;
     }
 }

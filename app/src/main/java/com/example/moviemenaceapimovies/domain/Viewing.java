@@ -10,13 +10,15 @@ public class Viewing {
     private double price;
     private boolean threeDimensional;
     private int roomNumber;
+    private int movieID;
 
-    public Viewing(int id, LocalDateTime date, double price, boolean threeDimensional, int room) {
+    public Viewing(int id, LocalDateTime date, double price, boolean threeDimensional, int room, int movieID) {
         this.id = id;
         this.date = date;
         this.price = price;
         this.threeDimensional = threeDimensional;
         this.roomNumber = room;
+        this.movieID = movieID;
     }
 
     public int getId() {
@@ -59,4 +61,11 @@ public class Viewing {
         this.roomNumber = roomNumber;
     }
 
+    public int getMovieID() {
+        return movieID;
+    }
+
+    public void setMovieID(int movieID) {
+        this.movieID = movieID;
+    }
 }
