@@ -1,8 +1,11 @@
 package com.example.moviemenaceapimovies.domain;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.List;
 
-public class Movie {
+public class Movie implements Parcelable {
     private int id;
     private String title;
     private String overview;
@@ -23,6 +26,29 @@ public class Movie {
         this.popularity = popularity;
         this.runtime = runtime;
     }
+
+    protected Movie(Parcel in) {
+        id = in.readInt();
+        title = in.readString();
+        overview = in.readString();
+        release_date = in.readString();
+        adult = in.readByte() != 0;
+        status = in.readString();
+        popularity = in.readDouble();
+        runtime = in.readInt();
+    }
+
+    public static final Creator<Movie> CREATOR = new Creator<Movie>() {
+        @Override
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        @Override
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
 
     public int getId() {
         return id;
@@ -107,5 +133,22 @@ public class Movie {
                 ", status='" + status + '\'' +
                 ", popularity=" + popularity +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(title);
+        dest.writeString(overview);
+        dest.writeString(release_date);
+        dest.writeByte((byte) (adult ? 1 : 0));
+        dest.writeString(status);
+        dest.writeDouble(popularity);
+        dest.writeInt(runtime);
     }
 }

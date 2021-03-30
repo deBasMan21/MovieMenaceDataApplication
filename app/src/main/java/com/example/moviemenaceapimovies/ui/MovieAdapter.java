@@ -14,28 +14,31 @@ import com.example.moviemenaceapimovies.domain.Movie;
 
 import java.util.List;
 
-public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ActorViewHolder> {
+public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
 
     private List<Movie> movies;
 
-    public MovieAdapter(List<Movie> movies) {
+    private MovieOnClickHandler mClickHandler;
+
+    public MovieAdapter(List<Movie> movies, MovieOnClickHandler mClickHandler) {
         this.movies = movies;
+        this.mClickHandler = mClickHandler;
     }
 
     @NonNull
     @Override
-    public ActorViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
+    public MovieViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
 
         Context context = viewGroup.getContext();
         int layoutIdForListItem = R.layout.movieid_list_item;
         LayoutInflater inflater = LayoutInflater.from(context);
 
         View view = inflater.inflate(layoutIdForListItem, viewGroup, false);
-        return new ActorViewHolder(view);
+        return new MovieViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ActorViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull MovieViewHolder holder, int position) {
         Movie movie = movies.get(position);
 
         holder.mMovieID.setText(movie.getId() + " " + position);
@@ -50,16 +53,23 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ActorViewHol
         return movies.size();
     }
 
-    public class ActorViewHolder extends RecyclerView.ViewHolder {
+    public class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private TextView mMovieTitle;
         private TextView mMovieID;
 
-        public ActorViewHolder(@NonNull View itemView) {
+        public MovieViewHolder(@NonNull View itemView) {
             super(itemView);
             mMovieID = (TextView) itemView.findViewById(R.id.tv_movie_id);
             mMovieTitle = (TextView) itemView.findViewById(R.id.tv_movie_title);
+
+            itemView.setOnClickListener(this);
         }
 
+        @Override
+        public void onClick(View view) {
+            int itemIndex = getAdapterPosition();
+            mClickHandler.onMovieClick(view, itemIndex);
+        }
     }
 }
