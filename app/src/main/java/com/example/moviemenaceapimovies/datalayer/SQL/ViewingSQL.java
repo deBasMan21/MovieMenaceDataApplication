@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi;
 
 import com.example.moviemenaceapimovies.domain.Viewing;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class ViewingSQL extends DatabaseConnection {
@@ -24,8 +25,22 @@ public class ViewingSQL extends DatabaseConnection {
             executeSQLStatement(SQL);
         } catch (Exception e){
             e.printStackTrace();
-        } finally {
-            closeConnection();
         }
+    }
+
+    public boolean areViewingsCreated(){
+        openConnection();
+        try{
+            String SQL = "SELECT * FROM Viewing WHERE Date > GETDATE()";
+            executeSQLSelectStatement(SQL);
+            if(rs.next()){
+                return true;
+            } else {
+                return false;
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return true;
     }
 }

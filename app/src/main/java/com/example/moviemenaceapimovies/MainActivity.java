@@ -15,8 +15,10 @@ import android.widget.TextView;
 
 import com.example.moviemenaceapimovies.datalayer.SQL.DatabaseConnection;
 import com.example.moviemenaceapimovies.datalayer.SQL.MovieSQL;
+import com.example.moviemenaceapimovies.datalayer.SQL.ViewingSQL;
 import com.example.moviemenaceapimovies.domain.Movie;
 import com.example.moviemenaceapimovies.domain.MovieID;
+import com.example.moviemenaceapimovies.domain.Viewing;
 import com.example.moviemenaceapimovies.logic.MovieIDManager;
 import com.example.moviemenaceapimovies.logic.MovieManager;
 import com.example.moviemenaceapimovies.logic.ViewingManager;
@@ -113,16 +115,25 @@ public class MainActivity extends AppCompatActivity implements MovieIDManager.Mo
 
     public class loadIntoDatabase extends AsyncTask<ArrayList<Movie>, Void, ArrayList<Movie>>{
 
+        @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
-        protected ArrayList<Movie> doInBackground(ArrayList<Movie>... movies) {
-            DatabaseConnection databaseConnection = new DatabaseConnection();
-            if(!databaseConnection.connectionIsOpen()){
-                databaseConnection.openConnection();
+        protected ArrayList<Movie> doInBackground(ArrayList<Movie>... moviesProvided) {
+            DatabaseConnection db = new DatabaseConnection();
+            if(!db.connectionIsOpen()){
+                db.openConnection();
             }
             MovieSQL movieSQL = new MovieSQL();
-            movies[0] = movieSQL.getMoviesFromDb();
+            moviesProvided[0] = movieSQL.getMoviesFromDb();
 //            movieSQL.addMoviesToDb(movies);
-            return movies[0];
+            ViewingSQL viewingSQL = new ViewingSQL();
+            ViewingManager vm = new ViewingManager();
+            if(!viewingSQL.areViewingsCreated()){
+                for(int i = 1; i < 8; i++){
+                    viewingSQL.addViewingsToDB(vm.createViewings(LocalDate.now().plusDays(i), moviesProvided));
+                }
+            }
+            db.closeConnection();
+            return moviesProvided[0];
         }
 
         @Override

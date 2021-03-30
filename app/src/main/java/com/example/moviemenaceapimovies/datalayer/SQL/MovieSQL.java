@@ -23,7 +23,7 @@ public class MovieSQL extends DatabaseConnection {
             executeSQLStatement(SQL);
 
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 
