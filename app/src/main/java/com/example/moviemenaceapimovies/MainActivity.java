@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.example.moviemenaceapimovies.datalayer.SQL.DatabaseConnection;
 import com.example.moviemenaceapimovies.datalayer.SQL.MovieSQL;
+import com.example.moviemenaceapimovies.datalayer.SQL.ViewingSQL;
 import com.example.moviemenaceapimovies.domain.Movie;
 import com.example.moviemenaceapimovies.domain.MovieID;
 import com.example.moviemenaceapimovies.logic.MovieIDManager;
@@ -104,7 +105,10 @@ public class MainActivity extends AppCompatActivity implements MovieIDManager.Mo
 //            movieSQL.addMoviesToDb(movies);
 
             ViewingManager vm = new ViewingManager();
-            vm.createViewings(LocalDate.now(), movies);
+            ViewingSQL viewingSQL = new ViewingSQL();
+            for(int i = 1; i < 8; i++){
+                viewingSQL.addViewingsToDB(vm.createViewings(LocalDate.now().plusDays(i), movies));
+            }
             return null;
         }
 
