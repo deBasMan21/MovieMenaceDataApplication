@@ -7,6 +7,9 @@ import androidx.annotation.RequiresApi;
 import com.example.moviemenaceapimovies.domain.Viewing;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 
 public class ViewingSQL extends DatabaseConnection {
@@ -42,5 +45,31 @@ public class ViewingSQL extends DatabaseConnection {
             throwables.printStackTrace();
         }
         return true;
+    }
+
+    public ArrayList<Viewing> getViewingsByMovieId(int id) {
+        ArrayList<Viewing> viewings = null;
+        openConnection();
+        try {
+            if (connectionIsOpen()) {
+                viewings = new ArrayList<>();
+                String SQL = "SELECT * FROM Viewing WHERE MovieID IN(" + id + ")";
+
+                rs = executeSQLSelectStatement(SQL);
+
+                while (rs.next()) {
+                    LocalDateTime dateAndTime = LocalDateTime.of(LocalDate.parse(rs.getString("Date")),
+                            LocalTime.parse(rs.getString("StartTime")));
+                    Viewing viewing = new Viewing(rs.getInt("ViewID"), dateAndTime, rs.getDouble(
+                            "Price"), rs.getBoolean("3D"), rs.getInt("RoomNumber"), rs.getInt(
+                            "MovieID"));
+                    viewings.add(viewing);
+                }
+                return viewings;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return viewings;
     }
 }

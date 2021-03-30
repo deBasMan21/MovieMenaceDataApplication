@@ -4,19 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".MainActivity">
 
     <TextView
-        android:padding="8dp"
         android:id="@+id/tv_movieID_list_size"
-        android:text="Amount of movies: "
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:text="Amount of movies: " />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview_movieID_list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

@@ -4,16 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.MovieActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".ui.MovieActivity">
 
     <TextView
         android:id="@+id/tv_movie_activity_title"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/viewing_recyclerview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

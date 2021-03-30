@@ -1,16 +1,39 @@
 package com.example.moviemenaceapimovies.ui;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NavUtils;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.example.moviemenaceapimovies.R;
+import com.example.moviemenaceapimovies.datalayer.SQL.DatabaseConnection;
+import com.example.moviemenaceapimovies.datalayer.SQL.ViewingSQL;
+import com.example.moviemenaceapimovies.domain.Movie;
+import com.example.moviemenaceapimovies.domain.Viewing;
 
-public class MovieActivity extends AppCompatActivity {
+import java.util.ArrayList;
+
+public class MovieActivity extends AppCompatActivity implements ViewingAsyncTask.ViewingListener {
+
+    private static final String INTENT_EXTRA_MOVIE_KEY = "movie";
+
+    private ArrayList<Viewing> viewings = new ArrayList<>();
+    private Movie movie;
+
+    private TextView mMovieTitle;
+    private RecyclerView mRecyclerView;
+    private ViewingAdapter mViewingAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +44,24 @@ public class MovieActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+
+        Intent originalIntent = getIntent();
+        if (originalIntent.getParcelableExtra(INTENT_EXTRA_MOVIE_KEY) != null) {
+            movie = (Movie) originalIntent.getParcelableExtra(INTENT_EXTRA_MOVIE_KEY);
+        }
+
+        mMovieTitle = findViewById(R.id.tv_movie_activity_title);
+        mMovieTitle.setText(movie.getTitle());
+
+        mRecyclerView = findViewById(R.id.viewing_recyclerview);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+        mViewingAdapter = new ViewingAdapter(viewings);
+        mRecyclerView.setAdapter(mViewingAdapter);
+
+        new ViewingAsyncTask(this).execute(movie);
     }
 
     @Override
@@ -31,5 +72,11 @@ public class MovieActivity extends AppCompatActivity {
             NavUtils.navigateUpFromSameTask(this);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onViewingsAvailable(ArrayList<Viewing> viewings) {
+        this.viewings = viewings;
+        this.mViewingAdapter.notifyDataSetChanged();
     }
 }
