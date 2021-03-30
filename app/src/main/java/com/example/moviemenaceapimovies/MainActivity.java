@@ -61,8 +61,7 @@ public class MainActivity extends AppCompatActivity implements MovieIDManager.Mo
         mMovieAdapter = new MovieAdapter(movies);
         mRecyclerView.setAdapter(mMovieAdapter);
 
-        ViewingManager vm = new ViewingManager();
-        vm.createViewings(LocalDate.now());
+
 
     }
 
@@ -94,15 +93,20 @@ public class MainActivity extends AppCompatActivity implements MovieIDManager.Mo
 
     public class loadIntoDatabase extends AsyncTask<Void, Void, Void>{
 
+        @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         protected Void doInBackground(Void... voids) {
             DatabaseConnection databaseConnection = new DatabaseConnection();
             if(!databaseConnection.connectionIsOpen()){
                 databaseConnection.openConnection();
             }
-            MovieSQL movieSQL = new MovieSQL();
-            movieSQL.addMoviesToDb(movies);
+//            MovieSQL movieSQL = new MovieSQL();
+//            movieSQL.addMoviesToDb(movies);
+
+            ViewingManager vm = new ViewingManager();
+            vm.createViewings(LocalDate.now(), movies);
             return null;
         }
+
     }
 }
