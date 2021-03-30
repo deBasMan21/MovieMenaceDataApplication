@@ -1,6 +1,12 @@
 package com.example.moviemenaceapimovies.domain;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +37,18 @@ public class Viewing {
 
     public LocalDateTime getDate() {
         return date;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public String getDateFormatted(){
+        LocalDate date = LocalDate.of(this.date.getYear(), this.date.getMonth(),  this.date.getDayOfMonth());
+        return date.toString();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public String getTimeFormatted(){
+        LocalTime time = LocalTime.of(this.date.getHour(), this.date.getMinute());
+        return time.toString();
     }
 
     public void setDate(LocalDateTime date) {

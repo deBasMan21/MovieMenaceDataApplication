@@ -75,4 +75,6 @@ public class MovieManager implements Callback<Movie> {
     public interface MovieControllerListener {
         void onMovieDetailsAvailable(List<Movie> movie);
     }
+
+
 }

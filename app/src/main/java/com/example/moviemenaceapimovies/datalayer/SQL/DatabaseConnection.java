@@ -63,6 +63,7 @@ public class DatabaseConnection {
             } catch (SQLException e) {
                 System.out.println(e);
                 open = false;
+
             }
         }
         // Else, at least one the connection or statement fields is null, so
@@ -73,10 +74,9 @@ public class DatabaseConnection {
 
     public void closeConnection() {
         try {
+            connection.close();
             statement.close();
 
-            // Close the connection
-            connection.close();
         } catch (Exception e) {
             System.out.println(e);
         }
