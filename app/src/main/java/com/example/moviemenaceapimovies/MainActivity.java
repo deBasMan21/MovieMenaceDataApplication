@@ -1,6 +1,7 @@
 package com.example.moviemenaceapimovies;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -59,7 +60,14 @@ public class MainActivity extends AppCompatActivity implements MovieOnClickHandl
         mCreateViewingsButton = findViewById(R.id.b_create_viewings);
 
         mRefreshMoviesButton.setOnClickListener((View v) -> {
-            new RefreshMoviesAsyncTask(this).execute(movieManager);
+            new AlertDialog.Builder(this)
+                    .setTitle("Refresh movies?")
+                    .setMessage("This will delete all current movies from the database to refresh them.")
+                    .setPositiveButton("Confirm", (dialog, which) -> {
+                        new RefreshMoviesAsyncTask(this).execute(movieManager);
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
         });
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,
@@ -78,7 +86,6 @@ public class MainActivity extends AppCompatActivity implements MovieOnClickHandl
 //        vm.createViewings(LocalDate.now());
 
     }
-
 
     @Override
     public void onMovieClick(View view, int itemIndex) {
@@ -104,8 +111,17 @@ public class MainActivity extends AppCompatActivity implements MovieOnClickHandl
     public void onRefreshedMoviesAvailable(ArrayList<Movie> movies) {
         this.movies.clear();
         this.movies.addAll(movies);
+
+        Collections.sort(this.movies, new Comparator<Movie>() {
+            @Override
+            public int compare(Movie m1, Movie m2) {
+                return Double.compare(m2.getPopularity(), m1.getPopularity());
+            }
+        });
+
         mAmountOfMovies.setText("Amount of movies: " + this.movies.size());
         this.mMovieAdapter.notifyDataSetChanged();
+        Log.d(TAG, "Movies list size: " + this.movies.size());
     }
 
     public class SQLDatabaseAsyncTask extends AsyncTask<ArrayList<Movie>, Void, ArrayList<Movie>>{
@@ -132,25 +148,17 @@ public class MainActivity extends AppCompatActivity implements MovieOnClickHandl
                 for (MovieID movieID : movieIDS) {
                     movieManager.getMovieDetails(movieID.getId());
                 }
-                movies.clear();
                 movies.addAll(movieManager.getMovies());
-
-                Collections.sort(movies, new Comparator<Movie>() {
-                    @Override
-                    public int compare(Movie m1, Movie m2) {
-                        return Double.compare(m2.getPopularity(), m1.getPopularity());
-                    }
-                });
 
                 movieManager.addMoviesToDb(movies);
             }
-            ViewingSQL viewingSQL = new ViewingSQL();
-            ViewingManager vm = new ViewingManager();
-            if(!viewingSQL.areViewingsCreated()){
-                for(int i = 1; i < 8; i++){
-                    viewingSQL.addViewingsToDB(vm.createViewings(LocalDate.now().plusDays(i), movies));
-                }
-            }
+//            ViewingSQL viewingSQL = new ViewingSQL();
+//            ViewingManager vm = new ViewingManager();
+//            if(!viewingSQL.areViewingsCreated()){
+//                for(int i = 1; i < 8; i++){
+//                    viewingSQL.addViewingsToDB(vm.createViewings(LocalDate.now().plusDays(i), movies));
+//                }
+//            }
             db.closeConnection();
             return movies;
         }

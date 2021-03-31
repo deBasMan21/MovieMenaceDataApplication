@@ -14,9 +14,10 @@ public class Movie implements Parcelable {
     private String status;
     private double popularity;
     private int runtime;
+    private String poster_path;
 
     public Movie(int id, String title, String overview, String release_date, boolean adult,
-                 String status, double popularity, int runtime) {
+                 String status, double popularity, int runtime, String poster_path) {
         this.id = id;
         this.title = title;
         this.overview = overview;
@@ -25,6 +26,7 @@ public class Movie implements Parcelable {
         this.status = status;
         this.popularity = popularity;
         this.runtime = runtime;
+        this.poster_path = poster_path;
     }
 
     protected Movie(Parcel in) {
@@ -122,6 +124,14 @@ public class Movie implements Parcelable {
         this.runtime = runtime;
     }
 
+    public String getPoster_path() {
+        return poster_path;
+    }
+
+    public void setPoster_path(String poster_path) {
+        this.poster_path = poster_path;
+    }
+
     @Override
     public String toString() {
         return "Movie{" +
@@ -132,6 +142,8 @@ public class Movie implements Parcelable {
                 ", adult=" + adult +
                 ", status='" + status + '\'' +
                 ", popularity=" + popularity +
+                ", runtime=" + runtime +
+                ", poster_path='" + poster_path + '\'' +
                 '}';
     }
 

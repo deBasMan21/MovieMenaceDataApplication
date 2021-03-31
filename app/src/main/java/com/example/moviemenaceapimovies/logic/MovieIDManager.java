@@ -26,7 +26,6 @@ public class MovieIDManager implements Callback<MovieIDApiResponse> {
     private final String TAG = this.getClass().getSimpleName();
     public static final String BASE_URL = "https://api.themoviedb.org/3/";
 
-
     ArrayList<MovieID> movieIDs = new ArrayList<>();
 
     private final Retrofit retrofit;

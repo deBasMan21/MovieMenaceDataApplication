@@ -17,7 +17,9 @@ public class MovieSQL extends DatabaseConnection {
                     SQL = SQL + ",";
                 }
                 SQL = SQL + "(" + movie.getId() + ", '" + movie.getTitle().replace("'", " ") +
-                        "', '" + movie.getOverview().replace("'", " ") + "', '" + movie.getRelease_date().toString() + "', " + movie.getAdult() + ", '" + movie.getStatus() + "', " + movie.getRuntime() + ", " + movie.getPopularity() + ", '" + movie.getUrl() + "')";
+                        "', '" + movie.getOverview().replace("'", " ") + "', '" + movie.getRelease_date().toString()
+                        + "', " + movie.getAdult() + ", '" + movie.getStatus() + "', " + movie.getRuntime()
+                        + ", " + movie.getPopularity() + ", '" + movie.getPoster_path() + "')";
             }
             System.out.println(SQL);
             executeSQLStatement(SQL);
@@ -59,7 +61,8 @@ public class MovieSQL extends DatabaseConnection {
                 while (rs.next()) {
                     Movie movie = new Movie(rs.getInt("Id"), rs.getString("Title"), rs.getString(
                             "Description"), rs.getString("ReleaseDate"), rs.getBoolean("Adult"),
-                            rs.getString("Status"), rs.getDouble("Popularity"), rs.getInt("Duration"));
+                            rs.getString("Status"), rs.getDouble("Popularity"), rs.getInt(
+                            "Duration"), rs.getString("URL"));
                     movies.add(movie);
                 }
                 return movies;
