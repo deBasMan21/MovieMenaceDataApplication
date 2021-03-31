@@ -1,7 +1,6 @@
 package com.example.moviemenaceapimovies.ui;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NavUtils;
@@ -9,18 +8,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 
 import com.example.moviemenaceapimovies.R;
-import com.example.moviemenaceapimovies.datalayer.SQL.DatabaseConnection;
-import com.example.moviemenaceapimovies.datalayer.SQL.ViewingSQL;
 import com.example.moviemenaceapimovies.domain.Movie;
 import com.example.moviemenaceapimovies.domain.Viewing;
+import com.example.moviemenaceapimovies.logic.ViewingAsyncTask;
 
 import java.util.ArrayList;
 
@@ -58,7 +53,7 @@ public class MovieActivity extends AppCompatActivity implements ViewingAsyncTask
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
         mRecyclerView.setLayoutManager(linearLayoutManager);
-        mViewingAdapter = new ViewingAdapter(viewings);
+        mViewingAdapter = new ViewingAdapter(this.viewings);
         mRecyclerView.setAdapter(mViewingAdapter);
 
         new ViewingAsyncTask(this).execute(movie);
@@ -76,7 +71,8 @@ public class MovieActivity extends AppCompatActivity implements ViewingAsyncTask
 
     @Override
     public void onViewingsAvailable(ArrayList<Viewing> viewings) {
-        this.viewings = viewings;
+        this.viewings.clear();
+        this.viewings.addAll(viewings);
         this.mViewingAdapter.notifyDataSetChanged();
     }
 }

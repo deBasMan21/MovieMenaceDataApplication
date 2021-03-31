@@ -40,7 +40,7 @@ public class ViewingAdapter extends RecyclerView.Adapter<ViewingAdapter.ViewingV
     public void onBindViewHolder(@NonNull ViewingViewHolder holder, int position) {
         Viewing viewing = viewings.get(position);
 
-        holder.mViewingId.setText(viewing.getId());
+        holder.mViewingId.setText(viewing.getId() + "");
         holder.mViewingTime.setText(viewing.getTimeFormatted());
         holder.mViewingDate.setText(viewing.getDateFormatted());
     }

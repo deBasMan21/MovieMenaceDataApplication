@@ -16,14 +16,13 @@ public class ViewingManager {
     private boolean threeDimensional = true;
     private double price = 12.50;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public ArrayList<Viewing> createViewings(LocalDate date, ArrayList<Movie>[] movies){
+    public ArrayList<Viewing> createViewings(LocalDate date, ArrayList<Movie> movies){
         ArrayList<Viewing> viewings = new ArrayList<>();
         for(int i = 1; i < 5; i++){
             for(int j = 12; j < 24; j += 4){
                 LocalTime lt = LocalTime.parse(j + ":00");
                 LocalDateTime dt = LocalDateTime.of(date, lt);
-                viewings.add(new Viewing(0, dt, price, is3D(), i, movies[0].get(getRandomNumber()).getId()));
+                viewings.add(new Viewing(0, dt, price, is3D(), i, movies.get(getRandomNumber()).getId()));
             }
         }
         return viewings;

@@ -14,6 +14,27 @@
         android:padding="8dp"
         android:text="Amount of movies: " />
 
+    <LinearLayout
+        android:id="@+id/layout_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/b_refresh_movies"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="@string/refresh_movies" />
+
+        <Button
+            android:id="@+id/b_create_viewings"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="25sp"
+            android:text="@string/create_viewings" />
+
+    </LinearLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview_movieID_list"
         android:layout_width="match_parent"

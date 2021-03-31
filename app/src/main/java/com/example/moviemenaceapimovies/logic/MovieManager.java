@@ -3,12 +3,12 @@ package com.example.moviemenaceapimovies.logic;
 import android.util.Log;
 
 import com.example.moviemenaceapimovies.datalayer.API.MovieAPI;
+import com.example.moviemenaceapimovies.datalayer.SQL.MovieSQL;
 import com.example.moviemenaceapimovies.domain.Movie;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -21,16 +21,17 @@ public class MovieManager implements Callback<Movie> {
     private final String TAG = this.getClass().getSimpleName();
     private static final String BASE_URL = MovieIDManager.BASE_URL;
 
-    private MovieControllerListener listener;
 
-    List<Movie> movies = new ArrayList<>();
+    ArrayList<Movie> movies = new ArrayList<>();
+    ArrayList<String> movieIDs = new ArrayList<>();
 
+    private final MovieSQL movieSQL;
     private final Retrofit retrofit;
     private final Gson gson;
     private final MovieAPI movieAPI;
 
-    public MovieManager(MovieControllerListener listener) {
-        this.listener = listener;
+    public MovieManager(MovieSQL movieSQL) {
+        this.movieSQL = movieSQL;
 
         gson = new GsonBuilder()
                 .setLenient()
@@ -49,6 +50,23 @@ public class MovieManager implements Callback<Movie> {
         call.enqueue(this);
     }
 
+    public void addMoviesToDb(ArrayList<Movie> movies) {
+        movieSQL.addMoviesToDb(movies);
+    }
+
+    public void removeMoviesFromDb() {
+        movies.clear();
+        movieSQL.removeMoviesFromDb();
+    }
+
+    public boolean areMoviesInDb() {
+        return movieSQL.areMoviesInDb();
+    }
+
+    public ArrayList<Movie> getMoviesFromDb() {
+        return movieSQL.getMoviesFromDb();
+    }
+
     @Override
     public void onResponse(Call<Movie> call, Response<Movie> response) {
         Log.d(TAG, "onResponse() status code: " + response.code());
@@ -58,9 +76,6 @@ public class MovieManager implements Callback<Movie> {
 
             Movie movie = response.body();
             this.movies.add(movie);
-            if (this.movies.size() == 60) {
-                listener.onMovieDetailsAvailable(this.movies);
-            }
         } else {
             Log.e(TAG, "Not successful! Message: " + response.message());
         }
@@ -71,10 +86,7 @@ public class MovieManager implements Callback<Movie> {
         Log.e(TAG, "onFailure" + t.getMessage());
     }
 
-
-    public interface MovieControllerListener {
-        void onMovieDetailsAvailable(List<Movie> movie);
+    public ArrayList<Movie> getMovies() {
+        return movies;
     }
-
-
 }

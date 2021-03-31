@@ -26,16 +26,14 @@ public class MovieIDManager implements Callback<MovieIDApiResponse> {
     private final String TAG = this.getClass().getSimpleName();
     public static final String BASE_URL = "https://api.themoviedb.org/3/";
 
-    private MovieIDControllerListener listener;
 
-    List<MovieID> movieIDs = new ArrayList<>();
+    ArrayList<MovieID> movieIDs = new ArrayList<>();
 
     private final Retrofit retrofit;
     private final Gson gson;
     private final MovieAPI movieAPI;
 
-    public MovieIDManager(MovieIDControllerListener listener) {
-        this.listener = listener;
+    public MovieIDManager() {
 
         gson = new GsonBuilder()
                 .setLenient()
@@ -63,9 +61,6 @@ public class MovieIDManager implements Callback<MovieIDApiResponse> {
 
             List<MovieID> movieIDs = response.body().getResults();
             this.movieIDs.addAll(movieIDs);
-            if (this.movieIDs.size() == 60) {
-                listener.onMovieIDsAvailable(this.movieIDs);
-            }
         } else {
             Log.e(TAG, "Not successful! Message: " + response.message());
         }
@@ -76,10 +71,7 @@ public class MovieIDManager implements Callback<MovieIDApiResponse> {
         Log.e(TAG, "onFailure" + t.getMessage());
     }
 
-    public interface MovieIDControllerListener {
-        void onMovieIDsAvailable(List<MovieID> movieIDs);
+    public ArrayList<MovieID> getMovieIDS() {
+        return movieIDs;
     }
-
-
-
 }

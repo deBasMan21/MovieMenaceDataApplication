@@ -27,10 +27,29 @@ public class MovieSQL extends DatabaseConnection {
         }
     }
 
+    public boolean areMoviesInDb() {
+        try {
+            openConnection();
+            if (connectionIsOpen()) {
+                String SQL = "SELECT * FROM Movie";
+
+                rs = executeSQLSelectStatement(SQL);
+
+                if (rs.next()) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public ArrayList<Movie> getMoviesFromDb() {
         ArrayList<Movie> movies = null;
         try {
-            openConnection();
             if (connectionIsOpen()) {
                 movies = new ArrayList<>();
                 String SQL = "SELECT * FROM Movie";
@@ -51,5 +70,16 @@ public class MovieSQL extends DatabaseConnection {
         return movies;
     }
 
+    public void removeMoviesFromDb() {
+        try {
+            if (connectionIsOpen()) {
+                String SQL = "DELETE FROM Movie";
+
+                executeSQLStatement(SQL);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 }

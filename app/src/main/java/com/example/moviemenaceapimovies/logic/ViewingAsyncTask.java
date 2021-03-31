@@ -1,4 +1,4 @@
-package com.example.moviemenaceapimovies.ui;
+package com.example.moviemenaceapimovies.logic;
 
 import android.os.AsyncTask;
 import android.os.Build;
@@ -20,7 +20,6 @@ public class ViewingAsyncTask extends AsyncTask<Movie, Void, ArrayList<Viewing>>
         this.listener = listener;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected ArrayList<Viewing> doInBackground(Movie... movie) {
         DatabaseConnection databaseConnection = new DatabaseConnection();

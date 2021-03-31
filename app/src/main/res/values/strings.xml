@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">MovieMenaceAPIMovies</string>
+    <string name="refresh_movies">Refresh movies</string>
+    <string name="create_viewings">Create viewings</string>
 </resources>
