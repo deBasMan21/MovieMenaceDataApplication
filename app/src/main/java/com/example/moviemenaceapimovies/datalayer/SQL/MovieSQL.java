@@ -11,13 +11,13 @@ public class MovieSQL extends DatabaseConnection {
         try {
             openConnection();
             String SQL = "INSERT INTO Movie (Id, Title, Description, ReleaseDate, Adult, Status, " +
-                    "Duration, Popularity) VALUES";
+                    "Duration, Popularity, URL) VALUES";
             for (Movie movie : movies) {
                 if (SQL.length() > 110) {
                     SQL = SQL + ",";
                 }
                 SQL = SQL + "(" + movie.getId() + ", '" + movie.getTitle().replace("'", " ") +
-                        "', '" + movie.getOverview().replace("'", " ") + "', '" + movie.getRelease_date().toString() + "', " + movie.getAdult() + ", '" + movie.getStatus() + "', " + movie.getRuntime() + ", " + movie.getPopularity() + ")";
+                        "', '" + movie.getOverview().replace("'", " ") + "', '" + movie.getRelease_date().toString() + "', " + movie.getAdult() + ", '" + movie.getStatus() + "', " + movie.getRuntime() + ", " + movie.getPopularity() + ", '" + movie.getUrl() + "')";
             }
             System.out.println(SQL);
             executeSQLStatement(SQL);
@@ -52,7 +52,7 @@ public class MovieSQL extends DatabaseConnection {
         try {
             if (connectionIsOpen()) {
                 movies = new ArrayList<>();
-                String SQL = "SELECT * FROM Movie";
+                String SQL = "SELECT * FROM Movie ORDER BY Popularity DESC";
 
                 rs = executeSQLSelectStatement(SQL);
 
