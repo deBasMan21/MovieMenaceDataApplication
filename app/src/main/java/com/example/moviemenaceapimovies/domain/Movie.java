@@ -3,6 +3,7 @@ package com.example.moviemenaceapimovies.domain;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Movie implements Parcelable {
@@ -28,29 +29,6 @@ public class Movie implements Parcelable {
         this.runtime = runtime;
         this.poster_path = poster_path;
     }
-
-    protected Movie(Parcel in) {
-        id = in.readInt();
-        title = in.readString();
-        overview = in.readString();
-        release_date = in.readString();
-        adult = in.readByte() != 0;
-        status = in.readString();
-        popularity = in.readDouble();
-        runtime = in.readInt();
-    }
-
-    public static final Creator<Movie> CREATOR = new Creator<Movie>() {
-        @Override
-        public Movie createFromParcel(Parcel in) {
-            return new Movie(in);
-        }
-
-        @Override
-        public Movie[] newArray(int size) {
-            return new Movie[size];
-        }
-    };
 
     public int getId() {
         return id;
@@ -128,10 +106,6 @@ public class Movie implements Parcelable {
         return poster_path;
     }
 
-    public void setPoster_path(String poster_path) {
-        this.poster_path = poster_path;
-    }
-
     @Override
     public String toString() {
         return "Movie{" +
@@ -147,9 +121,16 @@ public class Movie implements Parcelable {
                 '}';
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    protected Movie(Parcel in) {
+        id = in.readInt();
+        title = in.readString();
+        overview = in.readString();
+        release_date = in.readString();
+        adult = in.readByte() != 0;
+        status = in.readString();
+        popularity = in.readDouble();
+        runtime = in.readInt();
+        poster_path = in.readString();
     }
 
     @Override
@@ -162,5 +143,23 @@ public class Movie implements Parcelable {
         dest.writeString(status);
         dest.writeDouble(popularity);
         dest.writeInt(runtime);
+        dest.writeString(poster_path);
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Movie> CREATOR = new Creator<Movie>() {
+        @Override
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        @Override
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
 }

@@ -17,15 +17,16 @@ public class ViewingSQL extends DatabaseConnection {
     public void addViewingsToDB(ArrayList<Viewing> viewings){
         openConnection();
         try{
-            String SQL = "INSERT INTO Viewing (Date, StartTime, Price, [3D], MovieID, RoomNumber) VALUES ";
+            StringBuilder SQL = new StringBuilder("INSERT INTO Viewing (Date, StartTime, Price, " +
+                    "[3D], MovieID, RoomNumber) VALUES ");
             for (Viewing view: viewings) {
                 if(SQL.length() > 80){
-                    SQL = SQL + ", ";
+                    SQL.append(", ");
                 }
-                SQL = SQL + "('" + view.getDateFormatted() + "', '" + view.getTimeFormatted() + "', " + view.getPrice() + ", " + (view.isThreeDimensional() ? 1 : 0) + ", " + view.getMovieID() + ", " + view.getRoomNumber() + ")";
+                SQL.append("('").append(view.getDateFormatted()).append("', '").append(view.getTimeFormatted()).append("', ").append(view.getPrice()).append(", ").append(view.isThreeDimensional() ? 1 : 0).append(", ").append(view.getMovieID()).append(", ").append(view.getRoomNumber()).append(")");
             }
             System.out.println(SQL);
-            executeSQLStatement(SQL);
+            executeSQLStatement(SQL.toString());
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -36,11 +37,7 @@ public class ViewingSQL extends DatabaseConnection {
         try{
             String SQL = "SELECT * FROM Viewing WHERE Date > GETDATE()";
             executeSQLSelectStatement(SQL);
-            if(rs.next()){
-                return true;
-            } else {
-                return false;
-            }
+            return rs.next();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -71,5 +68,18 @@ public class ViewingSQL extends DatabaseConnection {
             e.printStackTrace();
         }
         return viewings;
+    }
+
+    public void removeViewingsFromDb() {
+        openConnection();
+        try {
+            if (connectionIsOpen()) {
+                String SQL = "DELETE FROM Viewing";
+
+                executeSQLStatement(SQL);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -8,6 +8,7 @@ import com.example.moviemenaceapimovies.domain.Movie;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import retrofit2.Call;
@@ -19,35 +20,22 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MovieManager implements Callback<Movie> {
 
     private final String TAG = this.getClass().getSimpleName();
-    private static final String BASE_URL = MovieIDManager.BASE_URL;
-
 
     ArrayList<Movie> movies = new ArrayList<>();
     ArrayList<String> movieIDs = new ArrayList<>();
 
     private final MovieSQL movieSQL;
-    private final Retrofit retrofit;
-    private final Gson gson;
-    private final MovieAPI movieAPI;
 
     public MovieManager(MovieSQL movieSQL) {
         this.movieSQL = movieSQL;
-
-        gson = new GsonBuilder()
-                .setLenient()
-                .create();
-
-        retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .build();
-
-        movieAPI = retrofit.create(MovieAPI.class);
     }
 
-    public void getMovieDetails(String ID) {
+    public void getMovieDetails(String ID) throws IOException {
+        MovieAPI movieAPI = ServiceGenerator.createService(MovieAPI.class);
         Call<Movie> call = movieAPI.getMovieDetails(ID);
-        call.enqueue(this);
+        Movie movie;
+        movie = call.execute().body();
+        this.movies.add(movie);
     }
 
     public void addMoviesToDb(ArrayList<Movie> movies) {
@@ -65,6 +53,10 @@ public class MovieManager implements Callback<Movie> {
 
     public ArrayList<Movie> getMoviesFromDb() {
         return movieSQL.getMoviesFromDb();
+    }
+
+    public boolean checkSize() {
+        return this.movies.size() == 60;
     }
 
     @Override

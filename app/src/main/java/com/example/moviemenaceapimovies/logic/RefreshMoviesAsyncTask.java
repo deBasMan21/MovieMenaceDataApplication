@@ -1,18 +1,22 @@
 package com.example.moviemenaceapimovies.logic;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.example.moviemenaceapimovies.datalayer.SQL.DatabaseConnection;
 import com.example.moviemenaceapimovies.datalayer.SQL.ViewingSQL;
 import com.example.moviemenaceapimovies.domain.Movie;
 import com.example.moviemenaceapimovies.domain.MovieID;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
 public class RefreshMoviesAsyncTask extends AsyncTask<MovieManager, Void, ArrayList<Movie>> {
+
+    private static final String TAG = RefreshMoviesAsyncTask.class.getSimpleName();
 
     private RefreshedMoviesListener listener;
 
@@ -34,13 +38,26 @@ public class RefreshMoviesAsyncTask extends AsyncTask<MovieManager, Void, ArrayL
         ArrayList<MovieID> movieIDS = new ArrayList<>();
         MovieIDManager movieIDManager = new MovieIDManager();
         for (int i = 1; i < 4; i++) {
-            movieIDManager.loadTrendingMoviesPerWeek(i);
+            try {
+                movieIDManager.loadTrendingMoviesPerWeek(i);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         };
         movieIDS.clear();
         movieIDS.addAll(movieIDManager.getMovieIDS());
 
         for (MovieID movieID : movieIDS) {
-            movieManager.getMovieDetails(movieID.getId());
+            try {
+                movieManager.getMovieDetails(movieID.getId());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        while (movieManager.getMovies().size() < 60) {
+            if (movieManager.getMovies().size() > 0) {
+                Log.d(TAG, "Getting movies, current amount is: " + movieManager.getMovies().size());
+            }
         }
         movies.addAll(movieManager.getMovies());
 

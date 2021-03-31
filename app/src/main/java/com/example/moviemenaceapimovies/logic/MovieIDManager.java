@@ -21,53 +21,21 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MovieIDManager implements Callback<MovieIDApiResponse> {
+public class MovieIDManager {
 
     private final String TAG = this.getClass().getSimpleName();
     public static final String BASE_URL = "https://api.themoviedb.org/3/";
 
     ArrayList<MovieID> movieIDs = new ArrayList<>();
 
-    private final Retrofit retrofit;
-    private final Gson gson;
-    private final MovieAPI movieAPI;
-
-    public MovieIDManager() {
-
-        gson = new GsonBuilder()
-                .setLenient()
-                .create();
-
-        retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .build();
-
-        movieAPI = retrofit.create(MovieAPI.class);
-    }
-
-    public void loadTrendingMoviesPerWeek(int page) {
+    public void loadTrendingMoviesPerWeek(int page) throws IOException {
+        MovieAPI movieAPI = ServiceGenerator.createService(MovieAPI.class);
         Call<MovieIDApiResponse> call = movieAPI.loadTrendingMoviesByWeek(page);
-        call.enqueue(this);
-    }
-
-    @Override
-    public void onResponse(Call<MovieIDApiResponse> call, Response<MovieIDApiResponse> response) {
-        Log.d(TAG, "onResponse() status code: " + response.code());
-
-        if (response.isSuccessful()) {
-            Log.d(TAG, "Response: " + response.body());
-
-            List<MovieID> movieIDs = response.body().getResults();
-            this.movieIDs.addAll(movieIDs);
-        } else {
-            Log.e(TAG, "Not successful! Message: " + response.message());
-        }
-    }
-
-    @Override
-    public void onFailure(@NonNull Call<MovieIDApiResponse> call, Throwable t) {
-        Log.e(TAG, "onFailure" + t.getMessage());
+        MovieIDApiResponse movieIDApiResponse;
+        movieIDApiResponse = call.execute().body();
+        ArrayList<MovieID> movieIDS;
+        movieIDS = movieIDApiResponse.getResults();
+        this.movieIDs.addAll(movieIDS);
     }
 
     public ArrayList<MovieID> getMovieIDS() {

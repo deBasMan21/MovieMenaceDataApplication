@@ -1,6 +1,5 @@
 package com.example.moviemenaceapimovies;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -8,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -23,18 +21,20 @@ import com.example.moviemenaceapimovies.domain.MovieID;
 import com.example.moviemenaceapimovies.logic.MovieIDManager;
 import com.example.moviemenaceapimovies.logic.MovieManager;
 import com.example.moviemenaceapimovies.logic.RefreshMoviesAsyncTask;
+import com.example.moviemenaceapimovies.logic.RefreshViewingsAsyncTask;
 import com.example.moviemenaceapimovies.logic.ViewingManager;
 import com.example.moviemenaceapimovies.ui.MovieActivity;
 import com.example.moviemenaceapimovies.ui.MovieAdapter;
 import com.example.moviemenaceapimovies.ui.MovieOnClickHandler;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements MovieOnClickHandler, RefreshMoviesAsyncTask.RefreshedMoviesListener {
+public class MainActivity extends AppCompatActivity implements MovieOnClickHandler,
+        RefreshMoviesAsyncTask.RefreshedMoviesListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String INTENT_EXTRA_MOVIE_KEY = "movie";
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements MovieOnClickHandl
     private MovieAdapter mMovieAdapter;
     private TextView mAmountOfMovies;
     private Button mRefreshMoviesButton;
-    private Button mCreateViewingsButton;
+    private Button mRefreshViewingsButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,14 +57,25 @@ public class MainActivity extends AppCompatActivity implements MovieOnClickHandl
         mRecyclerView = findViewById(R.id.recyclerview_movieID_list);
         mAmountOfMovies = findViewById(R.id.tv_movieID_list_size);
         mRefreshMoviesButton = findViewById(R.id.b_refresh_movies);
-        mCreateViewingsButton = findViewById(R.id.b_create_viewings);
+        mRefreshViewingsButton = findViewById(R.id.b_refresh_viewings);
 
-        mRefreshMoviesButton.setOnClickListener((View v) -> {
+        mRefreshMoviesButton.setOnClickListener((View v) -> new AlertDialog.Builder(this)
+                .setTitle("Refresh movies?")
+                .setMessage("This will delete all current movies from the database to refresh" +
+                        " them.")
+                .setPositiveButton("Confirm", (dialog, which) -> {
+                    new RefreshMoviesAsyncTask(this).execute(movieManager);
+                })
+                .setNegativeButton("Cancel", null)
+                .show());
+
+        mRefreshViewingsButton.setOnClickListener((View v) -> {
             new AlertDialog.Builder(this)
-                    .setTitle("Refresh movies?")
-                    .setMessage("This will delete all current movies from the database to refresh them.")
+                    .setTitle("Refresh viewings?")
+                    .setMessage("This will delete all current viewings from the database to " +
+                            "refresh them.")
                     .setPositiveButton("Confirm", (dialog, which) -> {
-                        new RefreshMoviesAsyncTask(this).execute(movieManager);
+                       new RefreshViewingsAsyncTask().execute(movies);
                     })
                     .setNegativeButton("Cancel", null)
                     .show();
@@ -80,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements MovieOnClickHandl
 
         movieManager = new MovieManager(new MovieSQL());
 
-        new SQLDatabaseAsyncTask().execute(movies);
+        new SQLDatabaseAsyncTask().execute();
 
 //        ViewingManager vm = new ViewingManager();
 //        vm.createViewings(LocalDate.now());
@@ -102,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements MovieOnClickHandl
     public void onMovieDetailsAvailable(ArrayList<Movie> movies) {
         this.movies.clear();
         this.movies.addAll(movies);
-        mAmountOfMovies.append(this.movies.size() + "");
+        mAmountOfMovies.append(" " + this.movies.size());
         this.mMovieAdapter.notifyDataSetChanged();
         Log.d(TAG, "Movies list size: " + this.movies.size());
     }
@@ -112,27 +123,22 @@ public class MainActivity extends AppCompatActivity implements MovieOnClickHandl
         this.movies.clear();
         this.movies.addAll(movies);
 
-        Collections.sort(this.movies, new Comparator<Movie>() {
-            @Override
-            public int compare(Movie m1, Movie m2) {
-                return Double.compare(m2.getPopularity(), m1.getPopularity());
-            }
-        });
+        this.movies.sort((m1, m2) -> Double.compare(m2.getPopularity(), m1.getPopularity()));
 
-        mAmountOfMovies.setText("Amount of movies: " + this.movies.size());
+        mAmountOfMovies.setText(R.string.amount_movies + " " + this.movies.size());
         this.mMovieAdapter.notifyDataSetChanged();
         Log.d(TAG, "Movies list size: " + this.movies.size());
     }
 
-    public class SQLDatabaseAsyncTask extends AsyncTask<ArrayList<Movie>, Void, ArrayList<Movie>>{
+    public class SQLDatabaseAsyncTask extends AsyncTask<Void, Void, ArrayList<Movie>> {
 
         @Override
-        protected ArrayList<Movie> doInBackground(ArrayList<Movie>... moviesProvided) {
+        protected ArrayList<Movie> doInBackground(Void... voids) {
             DatabaseConnection db = new DatabaseConnection();
-            if(!db.connectionIsOpen()){
+            if (!db.connectionIsOpen()) {
                 db.openConnection();
             }
-            ArrayList<Movie> movies = moviesProvided[0];
+            ArrayList<Movie> movies = new ArrayList<>();
 
             if (movieManager.areMoviesInDb()) {
                 Log.d(TAG, "Loading movies from SQL database.");
@@ -142,23 +148,37 @@ public class MainActivity extends AppCompatActivity implements MovieOnClickHandl
                 ArrayList<MovieID> movieIDS = new ArrayList<>();
                 MovieIDManager movieIDManager = new MovieIDManager();
                 for (int i = 1; i < 4; i++) {
-                    movieIDManager.loadTrendingMoviesPerWeek(i);
+                    try {
+                        movieIDManager.loadTrendingMoviesPerWeek(i);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
                 movieIDS.addAll(movieIDManager.getMovieIDS());
                 for (MovieID movieID : movieIDS) {
-                    movieManager.getMovieDetails(movieID.getId());
+                    try {
+                        movieManager.getMovieDetails(movieID.getId());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                while (!movieManager.checkSize()) {
+                    Log.d(TAG,
+                            "Getting movies, current amount is: " + movieManager.getMovies().size());
                 }
                 movies.addAll(movieManager.getMovies());
 
                 movieManager.addMoviesToDb(movies);
+
+                ViewingSQL viewingSQL = new ViewingSQL();
+                ViewingManager vm = new ViewingManager();
+                if (!viewingSQL.areViewingsCreated()) {
+                    for (int i = 1; i < 8; i++) {
+                        viewingSQL.addViewingsToDB(vm.createViewings(LocalDate.now().plusDays(i),
+                                movies));
+                    }
+                }
             }
-//            ViewingSQL viewingSQL = new ViewingSQL();
-//            ViewingManager vm = new ViewingManager();
-//            if(!viewingSQL.areViewingsCreated()){
-//                for(int i = 1; i < 8; i++){
-//                    viewingSQL.addViewingsToDB(vm.createViewings(LocalDate.now().plusDays(i), movies));
-//                }
-//            }
             db.closeConnection();
             return movies;
         }
