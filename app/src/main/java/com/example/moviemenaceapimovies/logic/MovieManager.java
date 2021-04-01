@@ -1,25 +1,21 @@
 package com.example.moviemenaceapimovies.logic;
 
-import android.util.Log;
-
 import com.example.moviemenaceapimovies.datalayer.API.MovieAPI;
 import com.example.moviemenaceapimovies.datalayer.SQL.MovieSQL;
-import com.example.moviemenaceapimovies.domain.DutchTranslatedMovie;
+import com.example.moviemenaceapimovies.domain.TranslatedMovie;
 import com.example.moviemenaceapimovies.domain.Movie;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MovieManager {
 
     private final String TAG = this.getClass().getSimpleName();
 
     ArrayList<Movie> movies = new ArrayList<>();
-    ArrayList<DutchTranslatedMovie> dutchTranslatedMovies = new ArrayList<>();
+    ArrayList<TranslatedMovie> translatedMovies = new ArrayList<>();
 
     private final MovieSQL movieSQL;
 
@@ -37,10 +33,10 @@ public class MovieManager {
 
     public void getDutchMovieDetails(String ID) throws IOException {
         MovieAPI movieAPI = ServiceGenerator.createService(MovieAPI.class);
-        Call<DutchTranslatedMovie> call = movieAPI.getDutchMovieDetails(ID);
-        DutchTranslatedMovie dutchTranslatedMovie;
-        dutchTranslatedMovie = call.execute().body();
-        this.dutchTranslatedMovies.add(dutchTranslatedMovie);
+        Call<TranslatedMovie> call = movieAPI.getDutchMovieDetails(ID);
+        TranslatedMovie translatedMovie;
+        translatedMovie = call.execute().body();
+        this.translatedMovies.add(translatedMovie);
     }
 
     public void addMoviesToDb(ArrayList<Movie> movies) {
@@ -60,15 +56,15 @@ public class MovieManager {
         return movieSQL.getMoviesFromDb();
     }
 
-    public void addDutchTranslatedMovieToDb(DutchTranslatedMovie dutchMovie) {
-        movieSQL.addDutchTranslatedMoviesToDb(dutchMovie);
+    public void addTranslatedMovieToDb(TranslatedMovie translatedMovie) {
+        movieSQL.addDutchTranslatedMoviesToDb(translatedMovie);
     }
 
     public ArrayList<Movie> getMovies() {
         return movies;
     }
 
-    public ArrayList<DutchTranslatedMovie> getDutchTranslatedMovies() {
-        return dutchTranslatedMovies;
+    public ArrayList<TranslatedMovie> getTranslatedMovies() {
+        return translatedMovies;
     }
 }

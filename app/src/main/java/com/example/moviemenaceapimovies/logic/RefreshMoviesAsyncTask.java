@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.example.moviemenaceapimovies.datalayer.SQL.DatabaseConnection;
 import com.example.moviemenaceapimovies.datalayer.SQL.ViewingSQL;
+import com.example.moviemenaceapimovies.domain.TranslatedMovie;
 import com.example.moviemenaceapimovies.domain.Movie;
 import com.example.moviemenaceapimovies.domain.MovieID;
 
@@ -30,7 +31,6 @@ public class RefreshMoviesAsyncTask extends AsyncTask<MovieManager, Void, ArrayL
         if (!db.connectionIsOpen()) {
             db.openConnection();
         }
-        ArrayList<Movie> movies = new ArrayList<>();
 
         MovieManager movieManager = movieManagers[0];
         movieManager.removeMoviesFromDb();
@@ -43,7 +43,7 @@ public class RefreshMoviesAsyncTask extends AsyncTask<MovieManager, Void, ArrayL
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        };
+        }
         movieIDS.clear();
         movieIDS.addAll(movieIDManager.getMovieIDS());
 
@@ -59,14 +59,9 @@ public class RefreshMoviesAsyncTask extends AsyncTask<MovieManager, Void, ArrayL
                 Log.d(TAG, "Getting movies, current amount is: " + movieManager.getMovies().size());
             }
         }
-        movies.addAll(movieManager.getMovies());
+        ArrayList<Movie> movies = new ArrayList<>(movieManager.getMovies());
 
-        Collections.sort(movies, new Comparator<Movie>() {
-            @Override
-            public int compare(Movie m1, Movie m2) {
-                return Double.compare(m2.getPopularity(), m1.getPopularity());
-            }
-        });
+        movies.sort((m1, m2) -> Double.compare(m2.getPopularity(), m1.getPopularity()));
         movieManager.addMoviesToDb(movies);
 
         ViewingSQL viewingSQL = new ViewingSQL();
@@ -75,6 +70,20 @@ public class RefreshMoviesAsyncTask extends AsyncTask<MovieManager, Void, ArrayL
             for(int i = 1; i < 8; i++){
                 viewingSQL.addViewingsToDB(vm.createViewings(LocalDate.now().plusDays(i), movies));
             }
+        }
+
+        ArrayList<TranslatedMovie> dutchMovies;
+        for (Movie movie : movies) {
+            try {
+                movieManager.getDutchMovieDetails(movie.getId() + "");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        dutchMovies = movieManager.getTranslatedMovies();
+        for (TranslatedMovie dutchMovie : dutchMovies) {
+            dutchMovie.setLanguage("Dutch");
+            movieManager.addTranslatedMovieToDb(dutchMovie);
         }
 
         db.closeConnection();

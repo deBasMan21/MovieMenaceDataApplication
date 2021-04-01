@@ -16,7 +16,7 @@ import android.widget.TextView;
 import com.example.moviemenaceapimovies.datalayer.SQL.DatabaseConnection;
 import com.example.moviemenaceapimovies.datalayer.SQL.MovieSQL;
 import com.example.moviemenaceapimovies.datalayer.SQL.ViewingSQL;
-import com.example.moviemenaceapimovies.domain.DutchTranslatedMovie;
+import com.example.moviemenaceapimovies.domain.TranslatedMovie;
 import com.example.moviemenaceapimovies.domain.Movie;
 import com.example.moviemenaceapimovies.domain.MovieID;
 import com.example.moviemenaceapimovies.logic.MovieIDManager;
@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements MovieOnClickHandl
                     }
                 }
 
-                ArrayList<DutchTranslatedMovie> dutchMovies;
+                ArrayList<TranslatedMovie> dutchMovies;
                 for (Movie movie : movies) {
                     try {
                         movieManager.getDutchMovieDetails(movie.getId() + "");
@@ -175,10 +175,10 @@ public class MainActivity extends AppCompatActivity implements MovieOnClickHandl
                         e.printStackTrace();
                     }
                 }
-                dutchMovies = movieManager.getDutchTranslatedMovies();
-                for (DutchTranslatedMovie dutchMovie : dutchMovies) {
+                dutchMovies = movieManager.getTranslatedMovies();
+                for (TranslatedMovie dutchMovie : dutchMovies) {
                     dutchMovie.setLanguage("Dutch");
-                    movieManager.addDutchTranslatedMovieToDb(dutchMovie);
+                    movieManager.addTranslatedMovieToDb(dutchMovie);
                 }
             }
             db.closeConnection();

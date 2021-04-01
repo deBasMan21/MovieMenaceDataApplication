@@ -1,6 +1,6 @@
 package com.example.moviemenaceapimovies.datalayer.API;
 
-import com.example.moviemenaceapimovies.domain.DutchTranslatedMovie;
+import com.example.moviemenaceapimovies.domain.TranslatedMovie;
 import com.example.moviemenaceapimovies.domain.Movie;
 
 import retrofit2.Call;
@@ -19,5 +19,5 @@ public interface MovieAPI {
     Call<Movie> getMovieDetails(@Path("MOVIE_ID") String ID);
 
     @GET("movie/{MOVIE_ID}?api_key=" + API_KEY + "&language=nl-NL")
-    Call<DutchTranslatedMovie> getDutchMovieDetails(@Path("MOVIE_ID") String ID);
+    Call<TranslatedMovie> getDutchMovieDetails(@Path("MOVIE_ID") String ID);
 }

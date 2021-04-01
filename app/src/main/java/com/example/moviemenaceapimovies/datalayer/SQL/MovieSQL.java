@@ -1,10 +1,9 @@
 package com.example.moviemenaceapimovies.datalayer.SQL;
 
-import com.example.moviemenaceapimovies.domain.DutchTranslatedMovie;
+import com.example.moviemenaceapimovies.domain.TranslatedMovie;
 import com.example.moviemenaceapimovies.domain.Movie;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class MovieSQL extends DatabaseConnection {
 
@@ -18,7 +17,15 @@ public class MovieSQL extends DatabaseConnection {
                 if (SQLBuilder.length() > 110) {
                     SQLBuilder.append(",");
                 }
-                SQLBuilder.append("(").append(movie.getId()).append(", '").append(movie.getTitle().replace("'", " ")).append("', '").append(movie.getOverview().replace("'", " ")).append("', '").append(movie.getRelease_date().toString()).append("', ").append(movie.getAdult()).append(", '").append(movie.getStatus()).append("', ").append(movie.getRuntime()).append(", ").append(movie.getPopularity()).append(", '").append(movie.getPoster_path()).append("')");
+                SQLBuilder.append("(").append(movie.getId()).append(", '")
+                        .append(movie.getTitle().replace("'", " ")).append("', '")
+                        .append(movie.getOverview().replace("'", " ")).append("', '")
+                        .append(movie.getRelease_date().toString()).append("', ")
+                        .append(movie.getAdult()).append(", '")
+                        .append(movie.getStatus()).append("', ")
+                        .append(movie.getRuntime()).append(", ")
+                        .append(movie.getPopularity()).append(", '")
+                        .append(movie.getPoster_path()).append("')");
             }
             String SQL = SQLBuilder.toString();
             System.out.println(SQL);
@@ -29,16 +36,16 @@ public class MovieSQL extends DatabaseConnection {
         }
     }
 
-    public void addDutchTranslatedMoviesToDb(DutchTranslatedMovie dutchMovie) {
+    public void addDutchTranslatedMoviesToDb(TranslatedMovie translatedMovie) {
         try {
             openConnection();
             if (connectionIsOpen()) {
                 String SQL = "INSERT INTO Translations (Id, Description, Language, Title, URL) ";
-                     SQL += "VALUES(" + dutchMovie.getId() + ", '" +
-                             dutchMovie.getOverview().replace("'", " ") + "', '" +
-                            dutchMovie.getLanguage() + "', '" +
-                            dutchMovie.getTitle().replace("'", " ") + "', '" +
-                             dutchMovie.getPoster_path() + "')";
+                SQL += "VALUES(" + translatedMovie.getId() + ", '" +
+                        translatedMovie.getOverview().replace("'", " ") + "', '" +
+                        translatedMovie.getLanguage() + "', '" +
+                        translatedMovie.getTitle().replace("'", " ") + "', '" +
+                        translatedMovie.getPoster_path() + "')";
                 executeSQLStatement(SQL);
             }
         } catch (Exception e) {

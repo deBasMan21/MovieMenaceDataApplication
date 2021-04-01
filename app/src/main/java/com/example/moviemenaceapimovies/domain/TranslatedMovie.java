@@ -1,13 +1,13 @@
 package com.example.moviemenaceapimovies.domain;
 
-public class DutchTranslatedMovie {
+public class TranslatedMovie {
     private int id;
     private String title;
     private String overview;
     private String language;
     private String poster_path;
 
-    public DutchTranslatedMovie(String title, String overview, String poster_path) {
+    public TranslatedMovie(String title, String overview, String poster_path) {
         this.title = title;
         this.overview = overview;
         this.poster_path = poster_path;
