@@ -12,9 +12,9 @@ public class MovieSQL extends DatabaseConnection {
             openConnection();
             StringBuilder SQLBuilder = new StringBuilder("INSERT INTO Movie (Id, Title, " +
                     "Description, ReleaseDate, Adult, Status, " +
-                    "Duration, Popularity, URL) VALUES");
+                    "Duration, Popularity, URL, Banner) VALUES");
             for (Movie movie : movies) {
-                if (SQLBuilder.length() > 110) {
+                if (SQLBuilder.length() > 150) {
                     SQLBuilder.append(",");
                 }
                 SQLBuilder.append("(").append(movie.getId()).append(", '")
@@ -25,7 +25,8 @@ public class MovieSQL extends DatabaseConnection {
                         .append(movie.getStatus()).append("', ")
                         .append(movie.getRuntime()).append(", ")
                         .append(movie.getPopularity()).append(", '")
-                        .append(movie.getPoster_path()).append("')");
+                        .append(movie.getPoster_path()).append("', '")
+                        .append(movie.getBackdrop_path()).append("')");
             }
             String SQL = SQLBuilder.toString();
             System.out.println(SQL);
@@ -82,7 +83,7 @@ public class MovieSQL extends DatabaseConnection {
                     Movie movie = new Movie(rs.getInt("Id"), rs.getString("Title"), rs.getString(
                             "Description"), rs.getString("ReleaseDate"), rs.getBoolean("Adult"),
                             rs.getString("Status"), rs.getDouble("Popularity"), rs.getInt(
-                            "Duration"), rs.getString("URL"));
+                            "Duration"), rs.getString("URL"), rs.getString("Banner"));
                     movies.add(movie);
                 }
                 return movies;

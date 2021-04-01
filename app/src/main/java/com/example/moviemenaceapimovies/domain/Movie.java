@@ -16,9 +16,10 @@ public class Movie implements Parcelable {
     private double popularity;
     private int runtime;
     private String poster_path;
+    private String backdrop_path;
 
     public Movie(int id, String title, String overview, String release_date, boolean adult,
-                 String status, double popularity, int runtime, String poster_path) {
+                 String status, double popularity, int runtime, String poster_path, String backdrop_path) {
         this.id = id;
         this.title = title;
         this.overview = overview;
@@ -28,6 +29,7 @@ public class Movie implements Parcelable {
         this.popularity = popularity;
         this.runtime = runtime;
         this.poster_path = poster_path;
+        this.backdrop_path = backdrop_path;
     }
 
     public int getId() {
@@ -106,6 +108,18 @@ public class Movie implements Parcelable {
         return poster_path;
     }
 
+    public void setPoster_path(String poster_path) {
+        this.poster_path = poster_path;
+    }
+
+    public String getBackdrop_path() {
+        return backdrop_path;
+    }
+
+    public void setBackdrop_path(String backdrop_path) {
+        this.backdrop_path = backdrop_path;
+    }
+
     @Override
     public String toString() {
         return "Movie{" +
@@ -118,19 +132,13 @@ public class Movie implements Parcelable {
                 ", popularity=" + popularity +
                 ", runtime=" + runtime +
                 ", poster_path='" + poster_path + '\'' +
+                ", backdrop_path='" + backdrop_path + '\'' +
                 '}';
     }
 
-    protected Movie(Parcel in) {
-        id = in.readInt();
-        title = in.readString();
-        overview = in.readString();
-        release_date = in.readString();
-        adult = in.readByte() != 0;
-        status = in.readString();
-        popularity = in.readDouble();
-        runtime = in.readInt();
-        poster_path = in.readString();
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     @Override
@@ -144,11 +152,20 @@ public class Movie implements Parcelable {
         dest.writeDouble(popularity);
         dest.writeInt(runtime);
         dest.writeString(poster_path);
+        dest.writeString(backdrop_path);
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    protected Movie(Parcel in) {
+        id = in.readInt();
+        title = in.readString();
+        overview = in.readString();
+        release_date = in.readString();
+        adult = in.readByte() != 0;
+        status = in.readString();
+        popularity = in.readDouble();
+        runtime = in.readInt();
+        poster_path = in.readString();
+        backdrop_path = in.readString();
     }
 
     public static final Creator<Movie> CREATOR = new Creator<Movie>() {

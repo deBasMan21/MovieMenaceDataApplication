@@ -23,7 +23,12 @@ public class ViewingSQL extends DatabaseConnection {
                 if(SQL.length() > 80){
                     SQL.append(", ");
                 }
-                SQL.append("('").append(view.getDateFormatted()).append("', '").append(view.getTimeFormatted()).append("', ").append(view.getPrice()).append(", ").append(view.isThreeDimensional() ? 1 : 0).append(", ").append(view.getMovieID()).append(", ").append(view.getRoomNumber()).append(")");
+                SQL.append("('").append(view.getDateFormatted()).append("', '")
+                        .append(view.getTimeFormatted()).append("', ")
+                        .append(view.getPrice()).append(", ")
+                        .append(view.isThreeDimensional() ? 1 : 0).append(", ")
+                        .append(view.getMovieID()).append(", ")
+                        .append(view.getRoomNumber()).append(")");
             }
             System.out.println(SQL);
             executeSQLStatement(SQL.toString());
