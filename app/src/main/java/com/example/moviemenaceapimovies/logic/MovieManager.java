@@ -4,9 +4,8 @@ import android.util.Log;
 
 import com.example.moviemenaceapimovies.datalayer.API.MovieAPI;
 import com.example.moviemenaceapimovies.datalayer.SQL.MovieSQL;
+import com.example.moviemenaceapimovies.domain.DutchTranslatedMovie;
 import com.example.moviemenaceapimovies.domain.Movie;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,15 +13,13 @@ import java.util.ArrayList;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MovieManager implements Callback<Movie> {
+public class MovieManager {
 
     private final String TAG = this.getClass().getSimpleName();
 
     ArrayList<Movie> movies = new ArrayList<>();
-    ArrayList<String> movieIDs = new ArrayList<>();
+    ArrayList<DutchTranslatedMovie> dutchTranslatedMovies = new ArrayList<>();
 
     private final MovieSQL movieSQL;
 
@@ -36,6 +33,14 @@ public class MovieManager implements Callback<Movie> {
         Movie movie;
         movie = call.execute().body();
         this.movies.add(movie);
+    }
+
+    public void getDutchMovieDetails(String ID) throws IOException {
+        MovieAPI movieAPI = ServiceGenerator.createService(MovieAPI.class);
+        Call<DutchTranslatedMovie> call = movieAPI.getDutchMovieDetails(ID);
+        DutchTranslatedMovie dutchTranslatedMovie;
+        dutchTranslatedMovie = call.execute().body();
+        this.dutchTranslatedMovies.add(dutchTranslatedMovie);
     }
 
     public void addMoviesToDb(ArrayList<Movie> movies) {
@@ -55,30 +60,15 @@ public class MovieManager implements Callback<Movie> {
         return movieSQL.getMoviesFromDb();
     }
 
-    public boolean checkSize() {
-        return this.movies.size() == 60;
-    }
-
-    @Override
-    public void onResponse(Call<Movie> call, Response<Movie> response) {
-        Log.d(TAG, "onResponse() status code: " + response.code());
-
-        if (response.isSuccessful()) {
-            Log.d(TAG, "Response: " + response.body());
-
-            Movie movie = response.body();
-            this.movies.add(movie);
-        } else {
-            Log.e(TAG, "Not successful! Message: " + response.message());
-        }
-    }
-
-    @Override
-    public void onFailure(Call<Movie> call, Throwable t) {
-        Log.e(TAG, "onFailure" + t.getMessage());
+    public void addDutchTranslatedMovieToDb(DutchTranslatedMovie dutchMovie) {
+        movieSQL.addDutchTranslatedMoviesToDb(dutchMovie);
     }
 
     public ArrayList<Movie> getMovies() {
         return movies;
+    }
+
+    public ArrayList<DutchTranslatedMovie> getDutchTranslatedMovies() {
+        return dutchTranslatedMovies;
     }
 }

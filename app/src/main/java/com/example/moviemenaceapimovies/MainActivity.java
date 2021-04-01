@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.example.moviemenaceapimovies.datalayer.SQL.DatabaseConnection;
 import com.example.moviemenaceapimovies.datalayer.SQL.MovieSQL;
 import com.example.moviemenaceapimovies.datalayer.SQL.ViewingSQL;
+import com.example.moviemenaceapimovies.domain.DutchTranslatedMovie;
 import com.example.moviemenaceapimovies.domain.Movie;
 import com.example.moviemenaceapimovies.domain.MovieID;
 import com.example.moviemenaceapimovies.logic.MovieIDManager;
@@ -30,8 +31,6 @@ import com.example.moviemenaceapimovies.ui.MovieOnClickHandler;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 public class MainActivity extends AppCompatActivity implements MovieOnClickHandler,
         RefreshMoviesAsyncTask.RefreshedMoviesListener {
@@ -63,23 +62,17 @@ public class MainActivity extends AppCompatActivity implements MovieOnClickHandl
                 .setTitle("Refresh movies?")
                 .setMessage("This will delete all current movies from the database to refresh" +
                         " them.")
-                .setPositiveButton("Confirm", (dialog, which) -> {
-                    new RefreshMoviesAsyncTask(this).execute(movieManager);
-                })
+                .setPositiveButton("Confirm", (dialog, which) -> new RefreshMoviesAsyncTask(this).execute(movieManager))
                 .setNegativeButton("Cancel", null)
                 .show());
 
-        mRefreshViewingsButton.setOnClickListener((View v) -> {
-            new AlertDialog.Builder(this)
-                    .setTitle("Refresh viewings?")
-                    .setMessage("This will delete all current viewings from the database to " +
-                            "refresh them.")
-                    .setPositiveButton("Confirm", (dialog, which) -> {
-                       new RefreshViewingsAsyncTask().execute(movies);
-                    })
-                    .setNegativeButton("Cancel", null)
-                    .show();
-        });
+        mRefreshViewingsButton.setOnClickListener((View v) -> new AlertDialog.Builder(this)
+                .setTitle("Refresh viewings?")
+                .setMessage("This will delete all current viewings from the database to " +
+                        "refresh them.")
+                .setPositiveButton("Confirm", (dialog, which) -> new RefreshViewingsAsyncTask().execute(movies))
+                .setNegativeButton("Cancel", null)
+                .show());
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,
                 LinearLayoutManager.VERTICAL, false);
@@ -138,14 +131,13 @@ public class MainActivity extends AppCompatActivity implements MovieOnClickHandl
             if (!db.connectionIsOpen()) {
                 db.openConnection();
             }
-            ArrayList<Movie> movies = new ArrayList<>();
+            ArrayList<Movie> movies;
 
             if (movieManager.areMoviesInDb()) {
                 Log.d(TAG, "Loading movies from SQL database.");
                 movies = movieManager.getMoviesFromDb();
             } else {
                 Log.d(TAG, "Loading movies from themoviedb API");
-                ArrayList<MovieID> movieIDS = new ArrayList<>();
                 MovieIDManager movieIDManager = new MovieIDManager();
                 for (int i = 1; i < 4; i++) {
                     try {
@@ -154,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements MovieOnClickHandl
                         e.printStackTrace();
                     }
                 }
-                movieIDS.addAll(movieIDManager.getMovieIDS());
+                ArrayList<MovieID> movieIDS = new ArrayList<>(movieIDManager.getMovieIDS());
                 for (MovieID movieID : movieIDS) {
                     try {
                         movieManager.getMovieDetails(movieID.getId());
@@ -162,11 +154,7 @@ public class MainActivity extends AppCompatActivity implements MovieOnClickHandl
                         e.printStackTrace();
                     }
                 }
-                while (!movieManager.checkSize()) {
-                    Log.d(TAG,
-                            "Getting movies, current amount is: " + movieManager.getMovies().size());
-                }
-                movies.addAll(movieManager.getMovies());
+                movies = new ArrayList<>(movieManager.getMovies());
 
                 movieManager.addMoviesToDb(movies);
 
@@ -177,6 +165,20 @@ public class MainActivity extends AppCompatActivity implements MovieOnClickHandl
                         viewingSQL.addViewingsToDB(vm.createViewings(LocalDate.now().plusDays(i),
                                 movies));
                     }
+                }
+
+                ArrayList<DutchTranslatedMovie> dutchMovies;
+                for (Movie movie : movies) {
+                    try {
+                        movieManager.getDutchMovieDetails(movie.getId() + "");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                dutchMovies = movieManager.getDutchTranslatedMovies();
+                for (DutchTranslatedMovie dutchMovie : dutchMovies) {
+                    dutchMovie.setLanguage("Dutch");
+                    movieManager.addDutchTranslatedMovieToDb(dutchMovie);
                 }
             }
             db.closeConnection();
