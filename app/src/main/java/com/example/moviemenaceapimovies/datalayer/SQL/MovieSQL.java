@@ -106,4 +106,18 @@ public class MovieSQL extends DatabaseConnection {
         }
     }
 
+    public void addAvansEndgame() {
+        try {
+            if (!connectionIsOpen()) {
+                openConnection();
+            }
+            String SQL = "INSERT INTO Movie(Id, Title, Description, ReleaseDate, Adult, Status, " +
+                    "Duration, Popularity, URL, Banner) VALUES(399567, 'Avans Endgame', 'An Avans" +
+                    " teamup movie with all the heroes we know and love from avans!', " +
+                    "'2021-04-01', 1, 'Released', 180, 1000, '/AvansEndgame', '/AvansEndgame')";
+            executeSQLStatement(SQL);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

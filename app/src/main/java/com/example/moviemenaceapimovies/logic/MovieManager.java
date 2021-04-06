@@ -67,4 +67,8 @@ public class MovieManager {
     public ArrayList<TranslatedMovie> getTranslatedMovies() {
         return translatedMovies;
     }
+
+    public void addAvansEndgame() {
+        movieSQL.addAvansEndgame();
+    }
 }

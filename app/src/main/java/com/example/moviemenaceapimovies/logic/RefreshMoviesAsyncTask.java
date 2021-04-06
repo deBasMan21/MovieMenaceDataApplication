@@ -63,6 +63,7 @@ public class RefreshMoviesAsyncTask extends AsyncTask<MovieManager, Void, ArrayL
 
         movies.sort((m1, m2) -> Double.compare(m2.getPopularity(), m1.getPopularity()));
         movieManager.addMoviesToDb(movies);
+        movieManager.addAvansEndgame();
 
         ViewingSQL viewingSQL = new ViewingSQL();
         ViewingManager vm = new ViewingManager();

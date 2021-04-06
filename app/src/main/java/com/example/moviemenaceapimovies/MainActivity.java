@@ -157,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements MovieOnClickHandl
                 movies = new ArrayList<>(movieManager.getMovies());
 
                 movieManager.addMoviesToDb(movies);
+                movieManager.addAvansEndgame();
 
                 ViewingSQL viewingSQL = new ViewingSQL();
                 ViewingManager vm = new ViewingManager();
